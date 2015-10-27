@@ -3,10 +3,11 @@ import tinys3
 import subprocess
 import psycopg2
 import imp
+from settings import settings
 #from pandas import read_sql
 
-helpers = imp.load_source('helpers', './helpers.py')
-settings = imp.load_source('settings', '/home/andywon/tools/settings.py').settings
+#helpers = imp.load_source('helpers', '/home/andywon/tools/helpers.py')
+#settings = imp.load_source('settings', '/home/andywon/tools/settings.py').settings
 
 
 def pipe_to_file(folder, filepath):

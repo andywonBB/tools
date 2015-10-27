@@ -1,40 +1,66 @@
 #!/home/andywon/projects/pyscript_test/venv/bin/python
 import tinys3
 import subprocess
-from settings import settings
+import psycopg2
+import imp
+#from pandas import read_sql
+
+helpers = imp.load_source('helpers', './helpers.py')
+settings = imp.load_source('settings', '/home/andywon/tools/settings.py').settings
 
 
-cmd = "cat /home/andywon/projects/session_wide02/* > test1.tsv"
-subprocess.call(cmd, shell=True)
-
-def pipe_to_file(folder, filename):
-	""" take folder output from hive query and pipe into single file in bash """
-	cmd = "cat " + folder + "*"
-
+def pipe_to_file(folder, filepath):
+    """ take folder output from hive query and pipe into single file in bash """
+    if folder.endswith("/"):
+        pass
+    else:
+        folder = folder + "/"
+    cmd = "cat " + folder + "* > " + filepath
+    subprocess.call(cmd, shell=True)
+    
 
 def upload_to_s3(filepath, targetpath):
-	""" uploads to TMP folder """
-	access_key = settings['s3']['access_key']
-	secret_key = settings['s3']['secret_key']
-	bucket = settings['s3']['bucket']
-	conn = tinys3.Connection(access_key , secret_key, tls=True) #, endpoint = 's3-external-1.amazonaws.com')
-	f = open(filepath,'rb')
-	conn.upload(targetpath,f, bucket)
+    """ uploads to TMP folder on s3 bucket """
+    access_key = settings['s3']['access_key']
+    secret_key = settings['s3']['secret_key']
+    bucket = settings['s3']['bucket']
+    conn = tinys3.Connection(access_key , secret_key, tls=True) #, endpoint = 's3-external-1.amazonaws.com')
+    f = open(filepath,'rb')
+    conn.upload(targetpath,f, bucket)
 
 
+def create_redshift_conn(*args,**kwargs):
+    """ open connection to redshift """
+    config = settings['redshift']
+    try:
+        con=psycopg2.connect(dbname=config['name'], host=config['host'], 
+                              port=config['port'], user=config['user'], 
+                              password=config['pass'])
+        return con
+    except Exception as err:
+        print(err)
 
 
-###
-select visitor_id, visit_id, get_json_object(properties, '$.')
+def copy_to_redshift(filename, table, delim='\\t'):
+    """ insert file to existing table in redshift """
+    access_key = settings['s3']['access_key']
+    secret_key = settings['s3']['secret_key']
+    bucket = 's3://' + settings['s3']['bucket'] + '/'
+    filepath = bucket + filename
+    con = create_redshift_conn()
+    cur = con.cursor()
+    sql = """
+    copy %s
+    FROM '%s'
+    credentials 'aws_access_key_id=%s;aws_secret_access_key=%s'
+    delimiter '%s'
+    ;
+    """ % (table, filepath, access_key, secret_key, delim)
+    cur.execute(sql)
+    con.commit()
 
 
-select visitor_id, visit_id, count(*)
-from event_raw
-where context='experiment' and dt = '2015-10-20'
-group by visitor_id, visit_id
-having count(*) > 1
-;
-
+"""
 ADD JAR /home/andywon/projects/udfs/brickhouse/target/brickhouse-0.7.1-SNAPSHOT.jar;
 ---CREATE TEMPORARY FUNCTION collect AS 'brickhouse.udf.collect.CollectUDAF';
 CREATE TEMPORARY FUNCTION to_json AS 'brickhouse.udf.json.ToJsonUDF';
@@ -73,3 +99,4 @@ and visit_id = 8
 and dt = '2015-10-20'
 group by visitor_id, visit_id
 ;
+"""

@@ -160,7 +160,7 @@ session_analytics_stg_to_prod = """
     stg.samples_viewed,
     stg.checkout_viewed,
     stg.experiments,
-    (stg.visit_end - stg.visit_start) as time_spent_sec,
+    datediff('seconds', visit_start, visit_end) as time_spent_sec,
     --entry_page_type,
     --exit_page_type,
     sub.womens_status,

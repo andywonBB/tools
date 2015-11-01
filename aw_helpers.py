@@ -50,16 +50,15 @@ def copy_to_redshift_stg(filename, table, delim='\\t'):
     filepath = bucket + filename
     con = create_redshift_conn()
     cur = con.cursor()
-    cur.execute('TRUNCATE ' + table + ';')
     sql = """
+    TRUNCATE %s;
     COPY %s
     FROM '%s'
     credentials 'aws_access_key_id=%s;aws_secret_access_key=%s'
     delimiter '%s'
     ;
-    """
-    args = (table, filepath, access_key, secret_key, delim)
-    cur.execute(sql, args)
+    """ % (table, table, filepath, access_key, secret_key, delim)
+    cur.execute(sql)
     con.commit()
     con.close()
     cur.close()

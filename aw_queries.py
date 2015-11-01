@@ -128,6 +128,7 @@ session_analytics_stg_to_prod = """
                ss.visit_id,
                ss.customer_id
     )
+    INSERT INTO tmp.session_analytics
     SELECT 
     stg.visitor_id,
     stg.visit_id,
@@ -165,7 +166,6 @@ session_analytics_stg_to_prod = """
     --exit_page_type,
     sub.womens_status,
     sub.mens_status
-    INTO tmp.session_analytics
     FROM tmp.stg_session_analytics stg
     JOIN sub_status sub
     ON stg.visitor_id = sub.visitor_id AND stg.visit_id = sub.visit_id

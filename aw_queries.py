@@ -90,6 +90,7 @@ hive_session_analytics = """
     """ 
 
 session_analytics_stg_to_prod = """
+    INSERT INTO tmp.session_analytics
     WITH box_invervals AS
     (
       SELECT a.country,
@@ -128,7 +129,6 @@ session_analytics_stg_to_prod = """
                ss.visit_id,
                ss.customer_id
     )
-    INSERT INTO tmp.session_analytics
     SELECT 
     stg.visitor_id,
     stg.visit_id,

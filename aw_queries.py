@@ -128,6 +128,7 @@ session_analytics_stg_to_prod = """
                ss.visit_id,
                ss.customer_id
     )
+    SELECT 
     stg.visitor_id,
     stg.visit_id,
     stg.visit_date,

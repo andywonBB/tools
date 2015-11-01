@@ -28,7 +28,6 @@ def upload_to_s3(filepath, targetpath):
     conn = tinys3.Connection(access_key , secret_key, tls=True) #, endpoint = 's3-external-1.amazonaws.com')
     f = open(filepath,'rb')
     conn.upload(targetpath,f, bucket)
-    conn.close()
 
 
 def create_redshift_conn(*args,**kwargs):
@@ -52,14 +51,14 @@ def copy_to_redshift_stg(filename, table, delim='\\t'):
     con = create_redshift_conn()
     cur = con.cursor()
     sql = """
-    TRUNCATE table;
+    TRUNCATE %s;
     COPY %s
     FROM '%s'
     credentials 'aws_access_key_id=%s;aws_secret_access_key=%s'
     delimiter '%s'
     ;
     """
-    args = (table, filepath, access_key, secret_key, delim)
+    args = (table, table, filepath, access_key, secret_key, delim)
     cur.execute(sql, args)
     con.commit()
     con.close()

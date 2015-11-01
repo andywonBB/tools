@@ -131,7 +131,6 @@ session_analytics_stg_to_prod = """
     SELECT 
     stg.visitor_id,
     stg.visit_id,
-    stg.visit_date,
     stg.visit_start,
     stg.visit_end,
     stg.num_pages,

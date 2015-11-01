@@ -117,11 +117,11 @@ session_analytics_stg_to_prod = """
       SELECT ss.visitor_id,
              ss.visit_id,
              ss.customer_id,
-             MAX(CASE WHEN ss.visit_date BETWEEN fb.int_start AND fb.int_end THEN '2-active' WHEN fb.vertical_id IS NULL THEN '0-never' ELSE '1-cancelled' END) AS womens_status,
-             MAX(CASE WHEN ss.visit_date BETWEEN fb_m.int_start AND fb_m.int_end THEN '2-active' WHEN fb_m.vertical_id IS NULL THEN '0-never' ELSE '1-cancelled' END) AS mens_status
+             MAX(CASE WHEN ss.visit_start BETWEEN fb.int_start AND fb.int_end THEN '2-active' WHEN fb.vertical_id IS NULL THEN '0-never' ELSE '1-cancelled' END) AS womens_status,
+             MAX(CASE WHEN ss.visit_start BETWEEN fb_m.int_start AND fb_m.int_end THEN '2-active' WHEN fb_m.vertical_id IS NULL THEN '0-never' ELSE '1-cancelled' END) AS mens_status
       FROM tmp.stg_session_analytics ss
-        LEFT JOIN box_invervals fb ON fb.int_start < ss.visit_date AND fb.customer_id = ss.customer_id AND fb.country = 'US' AND fb.vertical_id = 1
-        LEFT JOIN box_invervals fb_m ON fb_m.int_start < ss.visit_date AND fb_m.customer_id = ss.customer_id AND fb_m.country = 'US' AND fb_m.vertical_id = 2
+        LEFT JOIN box_invervals fb ON fb.int_start < ss.visit_start AND fb.customer_id = ss.customer_id AND fb.country = 'US' AND fb.vertical_id = 1
+        LEFT JOIN box_invervals fb_m ON fb_m.int_start < ss.visit_start AND fb_m.customer_id = ss.customer_id AND fb_m.country = 'US' AND fb_m.vertical_id = 2
       where trim(ss.customer_id) not like ''
       and ss.customer_id is not null
       GROUP BY ss.visitor_id,

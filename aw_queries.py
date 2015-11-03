@@ -4,7 +4,7 @@ hive_session_analytics = """
     ADD JAR /home/andywon/projects/udfs/brickhouse/target/brickhouse-0.7.1-SNAPSHOT.jar;
     CREATE TEMPORARY FUNCTION collect AS 'brickhouse.udf.collect.CollectUDAF';
     CREATE TEMPORARY FUNCTION to_json AS 'brickhouse.udf.json.ToJsonUDF';
-    INSERT OVERWRITE LOCAL DIRECTORY '/home/andywon/projects/session_analytics_test/%s'
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/andywon/projects/session_analytics/%s'
     ROW FORMAT DELIMITED
     FIELDS TERMINATED BY '\\t'
     LINES TERMINATED BY '\\n'
@@ -60,8 +60,8 @@ hive_session_analytics = """
     MAX(CASE WHEN context = 'pdp' AND get_json_object(properties, '$.title') = 'Reserve Now' THEN '1-true' ELSE '0-false' END) as bbplus_addon
     FROM event_raw ev
     WHERE dt >= %s and dt <= %s
-    AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop_home', 'brand_index', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
-    AND event in ('view', 'click')
+    --AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop_home', 'brand_index', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
+    --AND event in ('view', 'click')
     GROUP BY visitor_id, visit_id
     ) er 
     ON ws.visitor_id = er.visitor_id AND ws.visit_id = er.visit_id
@@ -75,7 +75,7 @@ hive_session_analytics = """
     WHERE dt >= %s and dt <= %s
     GROUP BY visitor_id
     ) pv ON ws.visitor_id = pv.visitor_id
-    LEFT JOIN (
+    JOIN (
     SELECT visitor_id, visit_id, to_json(collect(event, get_json_object(properties, '$.variant'))) as experiments
     FROM event_raw
     WHERE context = 'experiment'
@@ -90,7 +90,7 @@ hive_session_analytics = """
     """ 
 
 session_analytics_stg_to_prod = """
-    INSERT INTO tmp.session_analytics
+    INSERT INTO tmp.web_analytics
     WITH box_invervals AS
     (
       SELECT a.country,

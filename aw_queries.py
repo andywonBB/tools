@@ -1,5 +1,4 @@
 hive_session_analytics = """
-    set hive.exec.reducers.max=800;
     ADD JAR /home/klai/projects/warehouse_and_analytics/warehouse_crons/lib/HiveSwarm-1.0-SNAPSHOT.jar;
     create temporary function user_agent_parser as 'com.livingsocial.hive.udf.UserAgentParser';
     ADD JAR /home/andywon/projects/udfs/brickhouse/target/brickhouse-0.7.1-SNAPSHOT.jar;

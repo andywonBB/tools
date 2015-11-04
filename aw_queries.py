@@ -60,8 +60,8 @@ hive_session_analytics = """
     MAX(CASE WHEN context = 'pdp' AND get_json_object(properties, '$.title') = 'Reserve Now' THEN '1-true' ELSE '0-false' END) as bbplus_addon
     FROM event_raw ev
     WHERE dt >= %s and dt <= %s
-    --AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop_home', 'brand_index', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
-    --AND event in ('view', 'click')
+    AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop_home', 'brand_index', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
+    AND event in ('view', 'click')
     GROUP BY visitor_id, visit_id
     ) er 
     ON ws.visitor_id = er.visitor_id AND ws.visit_id = er.visit_id

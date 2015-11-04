@@ -59,7 +59,7 @@ hive_session_analytics = """
     MAX(CASE WHEN event = 'view' AND context in ('checkout', 'checkout-success', 'express-checkout') THEN '1-true' ELSE '0-false' END) as checkout_viewed,
     MAX(CASE WHEN context = 'pdp' AND get_json_object(properties, '$.title') = 'Reserve Now' THEN '1-true' ELSE '0-false' END) as bbplus_addon
     FROM event_raw ev
-    WHERE dt >= %s and dt <= %s
+    WHERE dt >= '%s' and dt <= '%s'
     AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop_home', 'brand_index', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
     AND event in ('view', 'click')
     GROUP BY visitor_id, visit_id
@@ -72,14 +72,14 @@ hive_session_analytics = """
     MAX(user_agent_parser(user_agent, 'os_family')) AS client_os,
     MAX(user_agent_parser(user_agent, 'device')) AS device
     FROM pageviews_raw
-    WHERE dt >= %s and dt <= %s
+    WHERE dt >= '%s' and dt <= '%s'
     GROUP BY visitor_id
     ) pv ON ws.visitor_id = pv.visitor_id
-    JOIN (
+    LEFT JOIN (
     SELECT visitor_id, visit_id, to_json(collect(event, get_json_object(properties, '$.variant'))) as experiments
     FROM event_raw
     WHERE context = 'experiment'
-    AND dt >= %s and dt <= %s
+    AND dt >= '%s' and dt <= '%s'
     GROUP BY visitor_id, visit_id
     ) exp
     ON ws.visitor_id = exp.visitor_id AND ws.visit_id = exp.visit_id

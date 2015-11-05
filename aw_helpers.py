@@ -55,6 +55,9 @@ def copy_to_redshift_stg(filename, table, delim='\\t'):
     COPY %s
     FROM '%s'
     credentials 'aws_access_key_id=%s;aws_secret_access_key=%s'
+    blanksasnull
+    emptyasnull
+    maxerror 100
     delimiter '%s'
     ;
     """ % (table, table, filepath, access_key, secret_key, delim)

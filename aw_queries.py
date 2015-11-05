@@ -52,7 +52,7 @@ hive_session_analytics = """
     count(distinct CASE WHEN event = 'view' and context = 'serp' THEN get_json_object(properties, '$.search_term') END) as unique_searches, 
     count(distinct CASE WHEN event = 'view' and context = 'bdp' THEN get_json_object(properties, '$.brand_id') END) as unique_brand_views, 
     MAX(CASE WHEN event = 'view' AND context = 'shop-home' THEN '1-true' ELSE '0-false' END) as shop_home,
-    MAX(CASE WHEN event = 'view' AND context = 'brand-index' THEN '1-true' ELSE '0-false' END) as brand_index,
+    MAX(CASE WHEN event = 'view' AND context = 'brands' OR context = 'brand-home' THEN '1-true' ELSE '0-false' END) as brand_index,
     MAX(CASE WHEN event = 'view' AND context = 'cart' THEN '1-true' ELSE '0-false' END) as cart_viewed,
     MAX(CASE WHEN event = 'view' AND context = 'bxdp' THEN '1-true' ELSE '0-false' END) as box_viewed,
     MAX(CASE WHEN event = 'view' AND context = 'samples' THEN '1-true' ELSE '0-false' END) as samples_viewed,
@@ -60,7 +60,7 @@ hive_session_analytics = """
     MAX(CASE WHEN context = 'pdp' AND get_json_object(properties, '$.title') = 'Reserve Now' THEN '1-true' ELSE '0-false' END) as bbplus_addon
     FROM event_raw ev
     WHERE dt >= '%s' and dt <= '%s'
-    AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop_home', 'brand_index', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
+    AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop-home', 'brands', 'brand-home', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
     AND event in ('view', 'click')
     GROUP BY visitor_id, visit_id
     ) er 

@@ -120,7 +120,7 @@ session_analytics_stg_to_prod = """
              ss.customer_id,
              MAX(CASE WHEN ss.visit_start BETWEEN fb.int_start AND fb.int_end THEN '2-active' WHEN fb.vertical_id IS NULL THEN '0-never' ELSE '1-cancelled' END) AS womens_status,
              MAX(CASE WHEN ss.visit_start BETWEEN fb_m.int_start AND fb_m.int_end THEN '2-active' WHEN fb_m.vertical_id IS NULL THEN '0-never' ELSE '1-cancelled' END) AS mens_status
-      FROM tmp.stg_session_analytics ss
+      FROM tmp.stg_web_analytics ss
         LEFT JOIN box_invervals fb ON fb.int_start < ss.visit_start AND fb.customer_id = ss.customer_id AND fb.country = 'US' AND fb.vertical_id = 1
         LEFT JOIN box_invervals fb_m ON fb_m.int_start < ss.visit_start AND fb_m.customer_id = ss.customer_id AND fb_m.country = 'US' AND fb_m.vertical_id = 2
       where trim(ss.customer_id) not like ''
@@ -173,7 +173,7 @@ session_analytics_stg_to_prod = """
     --exit_page_type,
     sub.womens_status,
     sub.mens_status
-    FROM tmp.stg_session_analytics stg
+    FROM tmp.stg_web_analytics stg
     JOIN sub_status sub
     ON stg.visitor_id = sub.visitor_id AND stg.visit_id = sub.visit_id
     ;

@@ -90,7 +90,7 @@ hive_session_analytics = """
     """ 
 
 session_analytics_stg_to_prod = """
-    INSERT INTO tmp.web_analytics
+    INSERT INTO tmp.session_analytics
     WITH box_invervals AS
     (
       SELECT a.country,
@@ -155,18 +155,18 @@ session_analytics_stg_to_prod = """
     stg.increment_ids,
     stg.browser,
     stg.client_os,
-    stg.device,
-    stg.unique_pdp_views,
-    stg.unique_catalog_views,
-    stg.unique_searches,
-    stg.unique_brand_views,
-    stg.shop_home,
-    stg.brand_index,
-    stg.cart_viewed,
-    stg.box_viewed,
-    stg.samples_viewed,
-    stg.checkout_viewed,
-    stg.bbplus_addon,
+    CASE WHEN stg.device in ('null', 'Other') AND stg.client_os not in ('iOS', 'Android', 'Windows Phone', 'Windows Phone OS', 'Symbian OS') THEN 'Desktop' ELSE stg.device END as device,
+    CASE WHEN stg.unique_pdp_views is null THEN 0 ELSE stg.unique_pdp_views END as unique_pdp_views,
+    CASE WHEN stg.unique_catalog_views is null THEN 0 ELSE stg.unique_catalog_views END as unique_catalog_views,
+    CASE WHEN stg.unique_searches is null THEN 0 ELSE stg.unique_searches END as unique_searches,
+    CASE WHEN stg.unique_brand_views is null THEN 0 ELSE stg.unique_brand_views END as unique_brand_views,
+    CASE WHEN stg.shop_home is null THEN '0-false' ELSE stg.shop_home END as shop_home,
+    CASE WHEN stg.brand_index is null THEN '0-false' ELSE stg.brand_index END as brand_index,
+    CASE WHEN stg.cart_viewed is null THEN '0-false' ELSE stg.cart_viewed END as cart_viewed,
+    CASE WHEN stg.box_viewed is null THEN '0-false' ELSE stg.box_viewed END as box_viewed,
+    CASE WHEN stg.samples_viewed is null THEN '0-false' ELSE stg.samples_viewed END as samples_viewed,
+    CASE WHEN stg.checkout_viewed is null THEN '0-false' ELSE stg.checkout_viewed END as checkout_viewed,
+    CASE WHEN stg.bbplus_addon is null THEN '0-false' ELSE stg.bbplus_addon END as bbplus_addon,
     stg.experiments,
     datediff('seconds', visit_start, visit_end) as time_spent_sec,
     --entry_page_type,
@@ -174,7 +174,7 @@ session_analytics_stg_to_prod = """
     sub.womens_status,
     sub.mens_status
     FROM tmp.stg_web_analytics stg
-    JOIN sub_status sub
+    LEFT JOIN sub_status sub
     ON stg.visitor_id = sub.visitor_id AND stg.visit_id = sub.visit_id
     ;
     """

@@ -43,7 +43,7 @@ hive_session_analytics = """
     er.bbplus_addon,
     exp.experiments
     FROM web_session ws
-    JOIN (
+    LEFT JOIN (
     select 
     visitor_id,
     visit_id,
@@ -65,7 +65,7 @@ hive_session_analytics = """
     GROUP BY visitor_id, visit_id
     ) er 
     ON ws.visitor_id = er.visitor_id AND ws.visit_id = er.visit_id
-    JOIN (
+    LEFT JOIN (
     SELECT 
     visitor_id,
     MAX(user_agent_parser(user_agent, 'ua_family')) AS browser,
@@ -86,6 +86,7 @@ hive_session_analytics = """
     WHERE ws.year = %s
     AND ws.month = %s
     AND ws.day >= %s AND ws.day <= %s
+    GROUP BY ws.visitor_id, ws.visit_id
     ;
     """ 
 

@@ -86,7 +86,6 @@ hive_session_analytics = """
     WHERE ws.year = %s
     AND ws.month = %s
     AND ws.day >= %s AND ws.day <= %s
-    GROUP BY ws.visitor_id, ws.visit_id
     ;
     """ 
 

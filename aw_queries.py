@@ -4,7 +4,7 @@ hive_session_analytics = """
     ADD JAR /home/andywon/projects/udfs/brickhouse/target/brickhouse-0.7.1-SNAPSHOT.jar;
     CREATE TEMPORARY FUNCTION collect AS 'brickhouse.udf.collect.CollectUDAF';
     CREATE TEMPORARY FUNCTION to_json AS 'brickhouse.udf.json.ToJsonUDF';
-    INSERT OVERWRITE LOCAL DIRECTORY '/home/andywon/projects/session_analytics/%s'
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/andywon/projects/web_analytics/%s'
     ROW FORMAT DELIMITED
     FIELDS TERMINATED BY '\\t'
     LINES TERMINATED BY '\\n'

@@ -61,13 +61,14 @@ hive_session_analytics = """
     FROM event_raw ev
     WHERE dt >= '%s' and dt <= '%s'
     AND context in ('pdp', 'catalog-index', 'serp', 'bdp', 'shop-home', 'brands', 'brand-home', 'cart', 'checkout', 'checkout-success', 'express-checkout', 'samples', 'bxdp')
-    AND event in ('view', 'click')
+    AND event in ('view', 'click', 'web')
     GROUP BY visitor_id, visit_id
     ) er 
     ON ws.visitor_id = er.visitor_id AND ws.visit_id = er.visit_id
     LEFT JOIN (
     SELECT 
     visitor_id,
+    --MAX(CASE WHEN page_request RLIKE '/(join|subscribe/)' THEN '1-true' ELSE '0-false' END) AS viewed_join,
     MAX(user_agent_parser(user_agent, 'ua_family')) AS browser,
     MAX(user_agent_parser(user_agent, 'os_family')) AS client_os,
     MAX(user_agent_parser(user_agent, 'device')) AS device

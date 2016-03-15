@@ -222,5 +222,6 @@ bbman_hub_events_stg_to_prod = """
     LEFT JOIN tmp.bbman_hub_events_20160314 b
     ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.timestamp = b.timestamp
     WHERE b.visitor_id is null AND a.dt is not null
+    ORDER BY a.timestamp ASC
     ;
     """

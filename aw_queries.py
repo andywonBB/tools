@@ -187,7 +187,7 @@ hive_bbman_hub_events = """
     LINES TERMINATED BY '\\n'
     select
     dt,
-    timestamp,
+    to_utc_timestamp(from_unixtime(timestamp), 'America/New_York'),
     visitor_id,
     visit_id,
     event,

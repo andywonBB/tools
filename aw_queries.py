@@ -179,3 +179,48 @@ session_analytics_stg_to_prod = """
     ON stg.visitor_id = sub.visitor_id AND stg.visit_id = sub.visit_id
     ;
     """
+
+hive_bbman_hub_events = """
+    INSERT OVERWRITE LOCAL DIRECTORY '/home/andywon/projects/bbman_hub_events/'
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY '\\t'
+    LINES TERMINATED BY '\\n'
+    select
+    dt,
+    timestamp,
+    visitor_id,
+    visit_id,
+    event,
+    get_json_object(properties, '$.box_history_id') as box_history_id,
+    get_json_object(properties, '$.box_product_id') as box_product_id,
+    get_json_object(properties, '$.box_type') as box_type,
+    get_json_object(properties, '$.pick_state') as pick_state,
+    get_json_object(properties, '$.pick_id') as pick_id,
+    get_json_object(properties, '$.pick_name') as pick_name,
+    get_json_object(properties, '$.action_name') as action_name
+    from event_raw
+    where dt >= '2016-02-26'
+    and context = 'mens-hub'
+    ;
+    """
+
+bbman_hub_events_stg_to_prod = """
+    INSERT INTO tmp.bbman_hub_events_20160314(dt, timestamp, visitor_id, visit_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
+    SELECT  a.dt,
+            a.timestamp,
+            a.visitor_id,
+            a.visit_id,
+            a.event,
+            a.box_history_id,
+            a.box_product_id,
+            a.box_type,
+            a.pick_state,
+            a.pick_id,
+            a.pick_name,
+            a.action_name
+    FROM tmp.stg_bbman_hub_events a
+    LEFT JOIN tmp.bbman_hub_events_20160314 b
+    ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.timestamp = b.timestamp
+    WHERE b.visitor_id is null AND a.dt is not null
+    ;
+    """

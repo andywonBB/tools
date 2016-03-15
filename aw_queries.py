@@ -205,9 +205,9 @@ hive_bbman_hub_events = """
     """
 
 bbman_hub_events_stg_to_prod = """
-    INSERT INTO tmp.bbman_hub_events_20160314(dt, timestamp, visitor_id, visit_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
+    INSERT INTO tmp.bbman_hub_events_20160314(dt, event_time, visitor_id, visit_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
     SELECT  a.dt,
-            a.timestamp,
+            a.event_time,
             a.visitor_id,
             a.visit_id,
             a.event,
@@ -220,8 +220,8 @@ bbman_hub_events_stg_to_prod = """
             a.action_name
     FROM tmp.stg_bbman_hub_events a
     LEFT JOIN tmp.bbman_hub_events_20160314 b
-    ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.timestamp = b.timestamp
+    ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.event_time = b.event_time
     WHERE b.visitor_id is null AND a.dt is not null
-    ORDER BY a.timestamp ASC
+    ORDER BY a.event_time ASC
     ;
     """

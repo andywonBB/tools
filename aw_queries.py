@@ -219,9 +219,9 @@ bbman_hub_events_stg_to_prod = """
             a.pick_name,
             a.action_name
     FROM tmp.stg_bbman_hub_events a
-    LEFT JOIN tmp.bbman_hub_events_20160314 b
-    ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.event_time = b.event_time
-    WHERE b.visitor_id is null AND a.dt is not null
+    --LEFT JOIN tmp.bbman_hub_events_20160314 b
+    --ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.event_time = b.event_time
+    --WHERE b.visitor_id is null AND a.dt is not null
     ORDER BY a.event_time ASC
     ;
     """

@@ -201,6 +201,7 @@ hive_bbman_hub_events = """
     from event_raw
     where dt >= '2016-02-26'
     and context = 'mens-hub'
+    and get_json_object(properties, '$.action_name') is not null
     ;
     """
 

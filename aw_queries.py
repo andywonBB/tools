@@ -223,7 +223,7 @@ bbman_hub_events_stg_to_prod = """
             a.pick_id,
             a.pick_name,
             a.action_name
-    FROM tmp.stg_bbman_hub_events a
+    FROM tmp.stg_bbman_hub_events_20160331 a
     LEFT JOIN tmp.bbman_hub_events_20160331 b
     ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.event_time = b.event_time and a.event = b.event
     WHERE b.visitor_id is null AND a.dt is not null

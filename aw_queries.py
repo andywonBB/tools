@@ -209,7 +209,7 @@ hive_bbman_hub_events = """
     """
 
 bbman_hub_events_stg_to_prod = """
-    INSERT INTO tmp.bbman_hub_events_20160331(dt, event_time, visitor_id, visit_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
+    INSERT INTO tmp.bbman_hub_events_20160331(dt, event_time, visitor_id, visit_id, customer_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
     SELECT  a.dt,
             a.event_time,
             a.visitor_id,

@@ -186,31 +186,35 @@ hive_bbman_hub_events = """
     FIELDS TERMINATED BY '\\t'
     LINES TERMINATED BY '\\n'
     select
-    dt,
-    to_utc_timestamp(from_unixtime(timestamp), 'America/New_York'),
-    visitor_id,
-    visit_id,
-    event,
-    get_json_object(properties, '$.box_history_id') as box_history_id,
-    get_json_object(properties, '$.box_product_id') as box_product_id,
-    get_json_object(properties, '$.box_type') as box_type,
-    get_json_object(properties, '$.pick_state') as pick_state,
-    get_json_object(properties, '$.pick_id') as pick_id,
-    get_json_object(properties, '$.pick_name') as pick_name,
-    get_json_object(properties, '$.action_name') as action_name
-    from event_raw
-    where dt >= '2016-02-26'
-    and context = 'mens-hub'
-    and get_json_object(properties, '$.action_name') is not null
+    a.dt,
+    to_utc_timestamp(from_unixtime(a.timestamp), 'America/New_York'),
+    a.visitor_id,
+    a.visit_id,
+    b.customer_id,
+    a.event,
+    get_json_object(a.properties, '$.box_history_id') as box_history_id,
+    get_json_object(a.properties, '$.box_product_id') as box_product_id,
+    get_json_object(a.properties, '$.box_type') as box_type,
+    get_json_object(a.properties, '$.pick_state') as pick_state,
+    get_json_object(a.properties, '$.pick_id') as pick_id,
+    get_json_object(a.properties, '$.pick_name') as pick_name,
+    get_json_object(a.properties, '$.action_name') as action_name
+    from event_raw a
+    left join webauth_raw b
+    ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id
+    where a.dt >= '%s' and b.dt >= '%s'
+    and a.context = 'mens-hub'
+    and get_json_object(a.properties, '$.action_name') is not null
     ;
     """
 
 bbman_hub_events_stg_to_prod = """
-    INSERT INTO tmp.bbman_hub_events_20160314(dt, event_time, visitor_id, visit_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
+    INSERT INTO tmp.bbman_hub_events_20160331(dt, event_time, visitor_id, visit_id, event, box_history_id, box_product_id, box_type, pick_state, pick_id, pick_name, action_name)
     SELECT  a.dt,
             a.event_time,
             a.visitor_id,
             a.visit_id,
+            a.customer_id,
             a.event,
             a.box_history_id,
             a.box_product_id,
@@ -220,7 +224,7 @@ bbman_hub_events_stg_to_prod = """
             a.pick_name,
             a.action_name
     FROM tmp.stg_bbman_hub_events a
-    LEFT JOIN tmp.bbman_hub_events_20160314 b
+    LEFT JOIN tmp.bbman_hub_events_20160331 b
     ON a.visitor_id = b.visitor_id and a.visit_id = b.visit_id and a.event_time = b.event_time and a.event = b.event
     WHERE b.visitor_id is null AND a.dt is not null
     ORDER BY a.event_time ASC

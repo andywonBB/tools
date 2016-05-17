@@ -9,10 +9,10 @@ num_files=$(echo $x | grep -o "tmp" | wc -l)
 y=2
 
 # Message to send if a number != 48 is found
-error="Oh noes! Something might be wrong with the event data. I don't see 2 tmp files in hdfs dfs -ls /event/weborders/$dt"
+error="Oh noes! This is an automated message. Something might be wrong with the event data. I don't see 2 tmp files in the weborders bucket! A Flume agent may be down"
 
 # Email list
-send_list=$(echo andy@birchbox.com klai@birchbox.com klai@birchbox.com girish@birchbox.com ethan.rosenthal@birchbox.com junia.zhang@birchbox.com jessica.kahn@birchbox.com matt.negrin@birchbox.com )
+send_list=$(echo andy@birchbox.com klai@birchbox.com girish@birchbox.com )
 
 if [ $num_files == $y ] ; then
 	:

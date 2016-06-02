@@ -48,7 +48,7 @@ hive_session_analytics = """
     visitor_id,
     visit_id,
     count(distinct CASE WHEN event = 'view' and context = 'pdp' THEN get_json_object(properties, '$.product_id') END) as unique_pdp_views, 
-    count(distinct CASE WHEN event = 'view' and context = 'catalog-index' THEN get_json_object(properties, '$.category-id') END) as unique_catalog_views, 
+    count(distinct CASE WHEN event = 'view' and context = 'catalog-index' THEN get_json_object(properties, '$.category_id') END) as unique_catalog_views, 
     count(distinct CASE WHEN event = 'view' and context = 'serp' THEN get_json_object(properties, '$.search_term') END) as unique_searches, 
     count(distinct CASE WHEN event = 'view' and context = 'bdp' THEN get_json_object(properties, '$.brand_id') END) as unique_brand_views, 
     MAX(CASE WHEN event = 'view' AND context = 'shop-home' THEN '1-true' ELSE '0-false' END) as shop_home,

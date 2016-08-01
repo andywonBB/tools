@@ -9,6 +9,15 @@ from settings import settings
 #helpers = imp.load_source('helpers', '/home/andywon/tools/helpers.py')
 #settings = imp.load_source('settings', '/home/andywon/tools/settings.py').settings
 
+def is_redshift_vacuum():
+    """ 
+    Check to see if Redshift is being vacuumed. Used in Luigi ETL pipeline.
+    """
+    query = "select * FROM stv_recents WHERE lower(status) = 'running' AND trim(query) LIKE 'vacuum'"
+    con = aw.create_redshift_conn()
+    results = read_sql(query, con)
+    con.close()
+    return len(results) != 0
 
 def pipe_to_file(folder, filepath):
     """ take folder output from hive query and pipe into single file in bash """

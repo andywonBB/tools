@@ -74,3 +74,15 @@ def copy_to_redshift_stg(filename, table, delim='\\t'):
     con.commit()
     con.close()
     cur.close()
+
+def sessions_exist(date):
+    query = """
+        select count(*) 
+        from tmp.session_analytics 
+        WHERE to_char(convert_timezone('America/New_York', visit_start), 'YYYY-MM-DD') = '%s'
+        """
+    query_with_date = query % date.strftime('%Y-%m-%d')
+    con = create_redshift_conn()
+    count = read_sql(query_with_date, con)
+    con.close()
+    return count > 10000

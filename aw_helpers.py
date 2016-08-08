@@ -14,7 +14,7 @@ def is_redshift_vacuum():
     Check to see if Redshift is being vacuumed. Used in Luigi ETL pipeline.
     """
     query = "select * FROM stv_recents WHERE lower(status) = 'running' AND trim(query) LIKE 'vacuum'"
-    con = aw.create_redshift_conn()
+    con = create_redshift_conn()
     results = read_sql(query, con)
     con.close()
     return len(results) != 0

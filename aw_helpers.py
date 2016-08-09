@@ -85,4 +85,4 @@ def sessions_exist(date):
     con = create_redshift_conn()
     count = read_sql(query_with_date, con)
     con.close()
-    return count[0,0] > 10000
+    return count.ix[0,0] > 10000

@@ -4,7 +4,7 @@ import subprocess
 import psycopg2
 import imp
 from settings import settings
-#from pandas import read_sql
+from pandas import read_sql
 
 #helpers = imp.load_source('helpers', '/home/andywon/tools/helpers.py')
 #settings = imp.load_source('settings', '/home/andywon/tools/settings.py').settings
@@ -85,4 +85,4 @@ def sessions_exist(date):
     con = create_redshift_conn()
     count = read_sql(query_with_date, con)
     con.close()
-    return count > 10000
+    return count[0,0] > 10000

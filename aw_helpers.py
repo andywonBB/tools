@@ -5,6 +5,8 @@ import psycopg2
 import imp
 from settings import settings
 from pandas import read_sql
+from datetime import datetime, date
+import os.path
 
 #helpers = imp.load_source('helpers', '/home/andywon/tools/helpers.py')
 #settings = imp.load_source('settings', '/home/andywon/tools/settings.py').settings
@@ -86,3 +88,19 @@ def sessions_exist(date):
     count = read_sql(query_with_date, con)
     con.close()
     return count.ix[0,0] > 10000
+
+def get_file_mod_datetime(file, date=False):
+    # get last datetime a file was modded. Return message if it doesn't exist
+    if os.path.isfile(file):
+        cmd = ['date', '-r', file]
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        out, err = p.communicate('foo\nfoofoo\n')
+        file_mod_dt = datetime.strptime(out[:-1], "%a %b %d %H:%M:%S %Z %Y")
+        return file_mod_dt.date() if date else file_mod_dt
+    else:
+        raise ValueError('File not found')
+
+def check_file_mod_time(file, start, end=date.today()):
+    # check to see if a file has been modified within a timerange
+    file_mod_dt = get_file_mod_datetime(file, date=True)
+    return start <= file_mod_dt <= end

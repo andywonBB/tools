@@ -100,7 +100,22 @@ def get_file_mod_datetime(file, date=False):
     else:
         raise ValueError('File not found')
 
-def check_file_mod_time(file, start, end=date.today()):
+def get_hadoop_file_mod_datetime(file, date=False):
+    # get last datetime a file was modded. Return message if it doesn't exist
+    cmd = ['hdfs', 'dfs', '-stat', file]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    out, err = p.communicate('foo\nfoofoo\n')
+    if len(out) > 0:
+        file_mod_dt = datetime.strptime(out[:-1], "%Y-%m-%d %H:%M:%S")
+        return file_mod_dt.date() if date else file_mod_dt
+    else:
+        raise ValueError('File not found')
+
+def is_file_updated(file, start, end=date.today(), hadoop=False):
     # check to see if a file has been modified within a timerange
-    file_mod_dt = get_file_mod_datetime(file, date=True)
-    return start <= file_mod_dt <= end
+    # returns false if no file exists because we want the script to run
+    try:
+        file_mod_dt = get_hadoop_file_mod_datetime(file, date=True) if hadoop else get_file_mod_datetime(file, date=True)
+        return start <= file_mod_dt <= end
+    except ValueError:
+        return False
